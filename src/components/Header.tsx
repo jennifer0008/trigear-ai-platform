@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search, User, Bot, Menu, X, ChevronDown, MessageSquare, LogOut } from 'lucide-react';
+import { Search, Bot, Menu, X, ChevronDown } from 'lucide-react';
 import AuthModal from './AuthModal';
-import { useAuth } from '../context/AuthContext';
+import { UserAuth } from './UserAuth';
 
 interface HeaderProps {
   onToggleAI: () => void;
@@ -15,9 +15,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleAI, onToggleChatbot, onCategory
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
-  
-  const { user, login, logout } = useAuth();
 
   const handleCategoryClick = (categoryName: string) => {
     // 滚动到精选好物区域
@@ -163,57 +160,10 @@ const Header: React.FC<HeaderProps> = ({ onToggleAI, onToggleChatbot, onCategory
               </div>
             </button>
             
-            {/* User Section */}
-            {user ? (
-              <div 
-                className="relative"
-                onMouseEnter={() => setShowUserDropdown(true)}
-                onMouseLeave={() => setShowUserDropdown(false)}
-              >
-                <button className="flex items-center space-x-2 p-2 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white rounded-lg transition-colors">
-                  {user.avatar ? (
-                    <img 
-                      src={user.avatar} 
-                      alt={user.name}
-                      className="h-6 w-6 rounded-full"
-                    />
-                  ) : (
-                    <User className="h-6 w-6" />
-                  )}
-                  <span className="hidden sm:block text-sm font-medium text-white">
-                    {user.name}
-                  </span>
-                </button>
-                
-                {/* User Dropdown */}
-                {showUserDropdown && (
-                  <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setShowUserDropdown(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors flex items-center space-x-2"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>退出登录</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button 
-                onClick={() => setShowAuthModal(true)}
-                className="flex items-center space-x-1 px-3 py-2 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white rounded-lg transition-colors"
-              >
-                <User className="h-5 w-5" />
-                <span className="hidden sm:block text-sm font-medium">登录</span>
-              </button>
-            )}
+            {/* User Authentication */}
+            <div className="text-white">
+              <UserAuth />
+            </div>
 
             {/* Mobile menu button */}
             <button
@@ -325,8 +275,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleAI, onToggleChatbot, onCategory
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        onAuthSuccess={(user) => {
-          login(user);
+        onAuthSuccess={() => {
           setShowAuthModal(false);
         }}
       />
